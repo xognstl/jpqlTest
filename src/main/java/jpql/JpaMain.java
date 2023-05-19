@@ -12,28 +12,26 @@ public class JpaMain {
         tx.begin();
 
         try{
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
 
             Member member = new Member();
             member.setUsername("member1");
-            member.setAge(10);
-
-            member.setTeam(team);
-
             em.persist(member);
+            Member member1 = new Member();
+            member1.setUsername("member2");
+            em.persist(member1);
+
+
 
             em.flush();
             em.clear();
 
-            String query = "select m from Member m inner join m.team t where t.name =: teamName";
+            String query = "select function('group_concat', m.username) from Member m";
+            //group_concat(m.username) 으로 사용가능
 
+            List<String> resultList = em.createQuery(query, String.class).getResultList();
 
-            List<Member> result = em.createQuery(query, Member.class).getResultList();
-            System.out.println("result.size() = " + result.size());
-            for (Member member1 : result) {
-                System.out.println("member1 = " + member1);
+            for (String s : resultList) {
+                System.out.println("s = " + s);
             }
 
             tx.commit();
